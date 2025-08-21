@@ -1,8 +1,8 @@
-use reqwest::multipart::{Form};
-use serde_derive::{Deserialize, Serialize};
-use serde_json::{json, Value};
 use crate::error::ChatGptError;
-use crate::v1::{ChatGptRequest, convert_form, convert_from_value, trim_value};
+use crate::v1::{convert_form, convert_from_value, trim_value, ChatGptRequest};
+use reqwest::multipart::Form;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseAudioTranscriptions {
@@ -19,15 +19,17 @@ pub struct ChatGptRequestAudioTranscriptions {
     language: Option<String>,
 }
 
-impl Into<Form> for ChatGptRequestAudioTranscriptions {
-    fn into(self) -> Form {
-        convert_form(self.to_value(), vec!["file".to_string()])
+impl From<ChatGptRequestAudioTranscriptions> for Form {
+    fn from(val: ChatGptRequestAudioTranscriptions) -> Self {
+        convert_form(val.to_value(), vec!["file".to_string()])
     }
 }
 
-
 impl ChatGptRequest for ChatGptRequestAudioTranscriptions {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 
@@ -49,7 +51,6 @@ impl ChatGptRequestAudioTranscriptions {
     }
 }
 
-
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseAudioTranslations {
     pub(crate) value: Value,
@@ -64,15 +65,17 @@ pub struct ChatGptRequestAudioTranslations {
     temperature: Option<f32>,
 }
 
-impl Into<Form> for ChatGptRequestAudioTranslations {
-    fn into(self) -> Form {
-        convert_form(self.to_value(), vec!["file".to_string()])
+impl From<ChatGptRequestAudioTranslations> for Form {
+    fn from(val: ChatGptRequestAudioTranslations) -> Self {
+        convert_form(val.to_value(), vec!["file".to_string()])
     }
 }
 
-
 impl ChatGptRequest for ChatGptRequestAudioTranslations {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 

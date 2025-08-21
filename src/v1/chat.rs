@@ -1,9 +1,9 @@
-use std::collections::HashMap;
-use serde_derive::{Deserialize, Serialize};
-use serde_json::{json, Value};
-use crate::ChatGptResponse;
 use crate::error::ChatGptError;
-use crate::v1::{ChatGptRequest, convert_from_value, trim_value};
+use crate::v1::{convert_from_value, trim_value, ChatGptRequest};
+use crate::ChatGptResponse;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use std::collections::HashMap;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseChatCompletions {
@@ -31,7 +31,6 @@ pub struct ChatGptRequestChatCompletions {
     logit_bias: Option<HashMap<String, isize>>,
     user: Option<String>,
 }
-
 
 impl ChatGptRequestChatCompletions {
     pub fn new(model: &str, messages: Vec<ChatGptChatFormat>) -> Self {
@@ -77,7 +76,10 @@ impl ChatGptChatFormat {
 }
 
 impl ChatGptRequest for ChatGptRequestChatCompletions {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 
@@ -85,4 +87,3 @@ impl ChatGptRequest for ChatGptRequestChatCompletions {
         trim_value(json!(self)).unwrap()
     }
 }
-

@@ -1,8 +1,8 @@
-use reqwest::multipart::{Form};
-use serde_derive::{Deserialize, Serialize};
-use serde_json::{json, Value};
 use crate::error::ChatGptError;
-use crate::v1::{ChatGptRequest, convert_form, convert_from_value, trim_value};
+use crate::v1::{convert_form, convert_from_value, trim_value, ChatGptRequest};
+use reqwest::multipart::Form;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseImagesGenerations {
@@ -48,7 +48,10 @@ pub struct ChatGptRequestImagesGenerations {
 }
 
 impl ChatGptRequest for ChatGptRequestImagesGenerations {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 
@@ -72,7 +75,6 @@ impl ChatGptRequestImagesGenerations {
         self
     }
 }
-
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseImagesEdits {
@@ -105,7 +107,10 @@ impl ChatGptRequestImagesEdits {
 }
 
 impl ChatGptRequest for ChatGptRequestImagesEdits {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 
@@ -114,9 +119,9 @@ impl ChatGptRequest for ChatGptRequestImagesEdits {
     }
 }
 
-impl Into<Form> for ChatGptRequestImagesEdits {
-    fn into(self) -> Form {
-        convert_form(self.to_value(), vec!["image".to_string()])
+impl From<ChatGptRequestImagesEdits> for Form {
+    fn from(val: ChatGptRequestImagesEdits) -> Self {
+        convert_form(val.to_value(), vec!["image".to_string()])
     }
 }
 
@@ -147,7 +152,10 @@ impl ChatGptRequestImagesVariation {
 }
 
 impl ChatGptRequest for ChatGptRequestImagesVariation {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 
@@ -156,9 +164,8 @@ impl ChatGptRequest for ChatGptRequestImagesVariation {
     }
 }
 
-impl Into<Form> for ChatGptRequestImagesVariation {
-    fn into(self) -> Form {
-        convert_form(self.to_value(), vec!["image".to_string()])
+impl From<ChatGptRequestImagesVariation> for Form {
+    fn from(val: ChatGptRequestImagesVariation) -> Self {
+        convert_form(val.to_value(), vec!["image".to_string()])
     }
 }
-

@@ -1,0 +1,124 @@
+name: Tests
+
+# This workflow is disabled by default. 
+# To enable it, uncomment the 'on' section below or manually trigger it
+# on:
+#   push:
+#     branches: [ main, master, develop ]
+#   pull_request:
+#     branches: [ main, master, develop ]
+#   workflow_dispatch:  # Allows manual triggering
+
+# Uncomment the section below to enable the workflow
+on:
+  workflow_dispatch:  # Only allow manual triggering for now
+
+env:
+  CARGO_TERM_COLOR: always
+  # Ollama configuration for tests
+  OLLAMA_BASE_URL: http://localhost:11434
+  OLLAMA_API_KEY: ollama
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      ollama:
+        image: ollama/ollama:latest
+        ports:
+          - 11434:11434
+        options: --health-cmd "curl -f http://localhost:11434/api/tags || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Cache cargo build
+        uses: actions/cache@v3
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+      
+      - name: Pull Ollama model
+        run: |
+          # Wait for Ollama to be ready
+          sleep 5
+          # Pull the model used in tests
+          curl -X POST http://localhost:11434/api/pull -d '{"name": "llama3.2:latest"}' || true
+          # Give it time to download
+          sleep 10
+          # Verify model is available
+          curl http://localhost:11434/api/tags
+      
+      - name: Run tests
+        run: cargo test --verbose
+      
+      - name: Run tests with all features
+        run: cargo test --all-features --verbose
+      
+      - name: Run doc tests
+        run: cargo test --doc --verbose
+
+  test-matrix:
+    name: Test on Multiple OS
+    runs-on: ${{ matrix.os }}
+    # This job is also disabled - uncomment strategy to enable
+    if: false  # Remove this line to enable the job
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        rust: [stable, beta]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Rust ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      
+      - name: Install Ollama (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          curl -fsSL https://ollama.ai/install.sh | sh
+          ollama serve &
+          sleep 5
+          ollama pull llama3.2:latest
+      
+      - name: Install Ollama (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install ollama
+          ollama serve &
+          sleep 5
+          ollama pull llama3.2:latest
+      
+      - name: Install Ollama (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          # Windows installation would require different approach
+          echo "Skipping Ollama installation on Windows for now"
+      
+      - name: Run tests
+        run: cargo test --verbose
+        continue-on-error: ${{ matrix.os == 'windows-latest' }}  # Allow Windows to fail for now

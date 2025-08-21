@@ -1,7 +1,7 @@
-use serde_derive::{Deserialize, Serialize};
-use serde_json::{ json, Value};
 use crate::error::ChatGptError;
-use crate::v1::{ChatGptRequest, convert_from_value, trim_value};
+use crate::v1::{convert_from_value, trim_value, ChatGptRequest};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseEdits {
@@ -19,7 +19,10 @@ pub struct ChatGptRequestEdits {
 }
 
 impl ChatGptRequest for ChatGptRequestEdits {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 
@@ -29,7 +32,7 @@ impl ChatGptRequest for ChatGptRequestEdits {
 }
 
 impl ChatGptRequestEdits {
-    pub fn new(model: &str, instruction: &str,input:&str) -> Self {
+    pub fn new(model: &str, instruction: &str, input: &str) -> Self {
         Self {
             model: model.to_string(),
             input: input.to_string(),

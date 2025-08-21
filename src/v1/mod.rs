@@ -1,39 +1,40 @@
-pub(crate) mod models;
-pub(crate) mod completions;
-pub(crate) mod chat;
-pub(crate) mod edits;
-pub(crate) mod images;
-pub(crate) mod embeddings;
 pub(crate) mod audio;
+pub(crate) mod chat;
+pub(crate) mod completions;
+pub(crate) mod edits;
+pub(crate) mod embeddings;
+pub(crate) mod images;
+pub(crate) mod models;
 
+use crate::error::ChatGptError;
+use reqwest::multipart::{Form, Part};
+use serde::Deserialize;
+use serde_json::{from_value, json, Map, Value};
 use std::io::Read;
 use std::path::Path;
-use reqwest::multipart::{Form, Part};
-use serde::{Deserialize};
-use serde_json::{from_value, json, Map, Value};
-use crate::error::ChatGptError;
 
 pub trait ChatGptRequest {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized;
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized;
     fn to_value(&self) -> Value;
 }
-
 
 pub trait ChatGptResponse {
     fn to_value(&self) -> &Value;
 }
 
-
 pub(crate) fn convert_from_value<T>(value: Value) -> Result<T, ChatGptError>
-    where
-        T: for<'de> Deserialize<'de>, {
+where
+    T: for<'de> Deserialize<'de>,
+{
     let request = from_value::<T>(value.clone());
     match request {
         Ok(request) => Ok(request),
         Err(e) => Err(ChatGptError::JsonParse(json!({
-                "value": value,
-                "error": e.to_string()
-            }))),
+            "value": value,
+            "error": e.to_string()
+        }))),
     }
 }
 
@@ -79,7 +80,10 @@ pub(crate) fn convert_form(value: Value, file_keys: Vec<String>) -> Form {
             } else if file_name.ends_with(".png") {
                 mine = "image/png".to_string();
             }
-            let part = Part::bytes(byte).file_name(file_name).mime_str(mine.as_str()).unwrap();
+            let part = Part::bytes(byte)
+                .file_name(file_name)
+                .mime_str(mine.as_str())
+                .unwrap();
             // let part = Part::bytes(byte).file_name(file_name).mime_str("audio/mpeg").unwrap();
             form = form.part("file", part);
         } else {
@@ -89,13 +93,12 @@ pub(crate) fn convert_form(value: Value, file_keys: Vec<String>) -> Form {
     form
 }
 
-
 pub(crate) fn trim_value(value: Value) -> Option<Value> {
     match value {
-        Value::Null => { None }
-        Value::Bool(v) => { Some(Value::Bool(v)) }
-        Value::Number(v) => { Some(Value::Number(v)) }
-        Value::String(v) => { Some(Value::String(v)) }
+        Value::Null => None,
+        Value::Bool(v) => Some(Value::Bool(v)),
+        Value::Number(v) => Some(Value::Number(v)),
+        Value::String(v) => Some(Value::String(v)),
         Value::Array(v) => {
             let mut rows = vec![];
             for row in v {

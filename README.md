@@ -78,6 +78,26 @@ let chatgpt = ChatGpt::new("YOUR_API_KEY_HERE");
 
 Replace `"YOUR_API_KEY_HERE"` with your actual API key.
 
+#### Using a Custom Base URL
+
+If you need to use a different OpenAI-compatible endpoint (e.g., Azure OpenAI Service, custom proxy, or local deployment), you can specify a custom base URL:
+
+```rust
+use openai_chatgpt_api::ChatGPT;
+
+// With custom base URL
+let chatgpt = ChatGpt::new_with_base_url("YOUR_API_KEY_HERE", "https://your-custom-endpoint.com");
+
+// With organization ID and custom base URL
+let chatgpt = ChatGpt::new_org_with_base_url(
+    "YOUR_API_KEY_HERE".to_string(),
+    "YOUR_ORG_ID".to_string(),
+    "https://your-custom-endpoint.com".to_string()
+);
+```
+
+The library will automatically append the appropriate OpenAI API paths (e.g., `/v1/chat/completions`) to your base URL.
+
 ### Models List
 Here is an example of how to use the models_list method to retrieve a list of all available models:
 

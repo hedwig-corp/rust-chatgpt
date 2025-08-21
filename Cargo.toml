@@ -1,18 +1,18 @@
 [package]
-name = "openai_chatgpt_api"
+name = "chatgpt"
 version = "0.1.2"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-authors = ["uiuifree"]
-description = "OpenAI ChatGPT API"
-license = "MIT"
-[dependencies]
-reqwest = { version = "0.11.10", features = ["json", "multipart"] }
+authors = ["uiuifree", "vincenzopalazzo <vincenzopalazzodev@gmail.com>"]
+description = "OpenAI API Client for Rust"
+license = "Apache-2.0"
 
-# Json
-serde = { version = "1.0" }
+[dependencies]
+reqwest = { version = "0.12", features = ["json", "multipart"] }
+
+serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serde_derive = "1.0"
+
 [dev-dependencies]
 tokio = { version = "1.19.2", features = ["full"] }

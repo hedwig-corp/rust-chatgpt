@@ -1,5 +1,5 @@
-use std::fmt::{Debug, Formatter};
-use serde_json::{Value};
+use serde_json::Value;
+use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Clone)]
 pub enum ChatGptError {
@@ -8,13 +8,13 @@ pub enum ChatGptError {
     JsonParse(Value),
 }
 
-impl ChatGptError {
-    pub fn to_string(&self) -> String {
+impl Display for ChatGptError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            ChatGptError::Connection(e) => { e.to_string() }
-            ChatGptError::JsonParse(e) => { e.to_string() }
+            ChatGptError::Connection(e) => write!(f, "{}", e),
+            ChatGptError::JsonParse(e) => write!(f, "{}", e),
             ChatGptError::Status(status, value) => {
-                format!("status: {} ,message:{}", status, value)
+                write!(f, "status: {} ,message:{}", status, value)
             }
         }
     }
@@ -22,6 +22,6 @@ impl ChatGptError {
 
 impl Debug for ChatGptError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_str(self.to_string().as_str())
+        write!(f, "{}", self)
     }
 }

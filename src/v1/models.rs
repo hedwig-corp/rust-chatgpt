@@ -1,7 +1,6 @@
-use serde_derive::{Deserialize, Serialize};
+use crate::v1::ChatGptResponse;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use crate::v1::{ChatGptResponse};
-
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseModelList {
@@ -14,7 +13,6 @@ impl ChatGptResponse for ChatGptResponseModelList {
     }
 }
 
-
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseModelRetrieve {
     pub(crate) value: Value,
@@ -25,4 +23,3 @@ impl ChatGptResponse for ChatGptResponseModelRetrieve {
         &self.value
     }
 }
-

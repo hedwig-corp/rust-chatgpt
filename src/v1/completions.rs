@@ -1,8 +1,8 @@
-use std::collections::HashMap;
-use serde_derive::{Deserialize, Serialize};
-use serde_json::{ json, Value};
 use crate::error::ChatGptError;
-use crate::v1::{ChatGptRequest, convert_from_value};
+use crate::v1::{convert_from_value, ChatGptRequest};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use std::collections::HashMap;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChatGptResponseCompletions {
@@ -31,7 +31,10 @@ pub struct ChatGptRequestCompletionsCreate {
 }
 
 impl ChatGptRequest for ChatGptRequestCompletionsCreate {
-    fn from_value(value: Value) -> Result<Self, ChatGptError> where Self: Sized {
+    fn from_value(value: Value) -> Result<Self, ChatGptError>
+    where
+        Self: Sized,
+    {
         convert_from_value(value)
     }
 

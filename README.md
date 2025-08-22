@@ -1,7 +1,7 @@
 # ChatGPT API Rust Library
 
-![Crates.io](https://img.shields.io/crates/v/openai_chatgpt_api?style=flat-square)
-![GitHub](https://img.shields.io/github/license/openai-rs/openai-api?style=flat-square)
+![Crates.io](https://img.shields.io/crates/v/rust-chatgpt?style=flat-square)
+![GitHub](https://img.shields.io/github/license/hedwig-corp/rust-chatgpt?style=flat-square)
 
 
 ## Overview
@@ -42,13 +42,13 @@ To use this library, add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-openai_chatgpt_api = "0.1"
+rust-chatgpt = "0.1"
 ```
 
 Then, add the following to your Rust code:
 
 ```rust
-use openai_chatgpt_api::ChatGPT;
+use rust_chatgpt::*;
 let chatgpt = ChatGpt::new("YOUR_API_KEY_HERE");
 let request = ChatGptRequestChatCompletions::new(
     "gpt-3.5-turbo",
@@ -72,7 +72,7 @@ To use the ChatGPT API Rust library, you first need to create a new `ChatGPT` ob
 following code:
 
 ```rust
-use openai_chatgpt_api::ChatGPT;
+use rust_chatgpt::*;
 let chatgpt = ChatGpt::new("YOUR_API_KEY_HERE");
 ```
 
@@ -83,7 +83,7 @@ Replace `"YOUR_API_KEY_HERE"` with your actual API key.
 If you need to use a different OpenAI-compatible endpoint (e.g., Azure OpenAI Service, custom proxy, or local deployment), you can specify a custom base URL:
 
 ```rust
-use openai_chatgpt_api::ChatGPT;
+use rust_chatgpt::*;
 
 // With custom base URL
 let chatgpt = ChatGpt::new_with_base_url("YOUR_API_KEY_HERE", "https://your-custom-endpoint.com");
@@ -131,8 +131,50 @@ println!("{:?}", response.to_value());
 
 
 
+## Development
+
+### Building and Testing
+
+This project includes a comprehensive Makefile for development tasks:
+
+```bash
+# Build the project
+make build
+
+# Run tests (requires Ollama for full test suite)
+make test
+
+# Run code formatting and linting
+make fmt
+make clippy
+
+# Run full CI pipeline
+make ci
+
+# Install and setup Ollama for local testing
+make install-ollama
+
+# Run tests specifically with Ollama
+make test-ollama
+```
+
+### Ollama Support
+
+This library supports local testing with [Ollama](https://ollama.ai), which allows you to run LLM models locally without requiring OpenAI API keys.
+
+To test with Ollama:
+
+1. Install Ollama: `make install-ollama` or visit [https://ollama.ai](https://ollama.ai)
+2. Start Ollama: `ollama serve`
+3. Pull a model: `ollama pull llama3.2:latest`
+4. Run tests: `make test-ollama`
+
+The library will automatically detect Ollama running on `http://localhost:11434` and use it for testing.
+
 ## Contributing
-Pull requests are welcome! If you have any questions or issues, please open an issue on the [GitHub repository](https://github.com/uiuifree/rust-openai-chatgpt-api).
+
+Pull requests are welcome! If you have any questions or issues, please open an issue on the [GitHub repository](https://github.com/hedwig-corp/rust-chatgpt).
 
 ## License
-This library is licensed under the MIT License. See the LICENSE file for details.
+
+This library is licensed under the Apache-2.0 License. See the LICENSE file for details.
